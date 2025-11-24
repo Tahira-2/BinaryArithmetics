@@ -243,10 +243,10 @@ string power(string num1, string num2)
 3.Loop through the dividend, bit by bit. 
 4.In each iteration treat the remainder as minuend and try subtracting num2 from it.
 5.Check the sign bit (the first character) of the result (called subRemainder here).
-    If it’s '0' (Positive): It means the divisor 'fits.' So, append '1' to quotient string (result)
+    If itâ€™s '0' (Positive): It means the divisor 'fits.' So, append '1' to quotient string (result)
         and update the remainder to this new result.
-    If it’s '1' (Negative): It means the divisor was bigger. So append '0' quotient string (result)
-        and append the next bit from dividend to the remain"
+    If itâ€™s '1' (Negative): It means the divisor was bigger. So append '0' quotient string (result)
+        and append the next bit from dividend to the remainder"
 6.Finnaly, return the result based on the operation user choose 
 */
 string divide(string n1, string n2, char operation)
