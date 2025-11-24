@@ -3,7 +3,6 @@
 #include <string>
 #include <tuple>
 using namespace std;
-
 /* Nme: n-bit Binary Adder-Subtractor
        :it can add or subtract two binary digits using addition only.
 
@@ -55,8 +54,6 @@ bool get_carry(bool A, bool B, bool C_in) {
 
     return carry;
 }
-
-
 
 //this function modifies the number's size to the right number of bit so successfully operate 2's complement
 /*1.  it takes the second number, it's size, and the size it will be changed to
@@ -129,7 +126,6 @@ pair<string, string> get_final_sum(string num1, string num2)
     return make_pair(sum, C_out);
 }
 
-
 //this function modifies the number's size to the right number of bit so successfully operate 2's complement
 /*1.  it takes the second number, it's size, and the size it will be changed to
 2. added_zero = calculates how many '0' needed to gain the certain length
@@ -189,7 +185,7 @@ string two_s_complement(string num2)
 string get_subtraction(string num1, string num2)
 {
     string Nbit_num1, Nbit_num2;
-    string one;    //NOTE: this is unnecessary, currently don't know how to get rid off
+    
 
     Nbit_num2 = two_s_complement(num2);
     tie(Nbit_num1, Nbit_num2) = equal_size(num1, Nbit_num2);   //also fixing numer1's bit number to make summation easier.
@@ -222,7 +218,6 @@ string multiply(string num1, string num2)
 
 }
 
-
 ///power function
 string power(string num1, string num2)
 {
@@ -240,42 +235,132 @@ string power(string num1, string num2)
     return result;
 }
 
+//Division & reminder
+/*
+* It follows the shift-and-subtract logic. 
+* Steps: 1. Treat the input strings like streams of bits. 
+2.Start by initializing remainder with just the first bit of the dividend.
+3.Loop through the dividend, bit by bit. 
+4.In each iteration treat the remainder as minuend and try subtracting num2 from it.
+5.Check the sign bit (the first character) of the result (called subReminder here).
+    If it’s '0' (Positive): It means the divisor 'fits.' So, append '1' to quotient string (result)
+        and update the remainder to this new result.
+    If it’s '1' (Negative): It means the divisor was bigger. So append '0' quotient string (result)
+        and append the next bit from dividend to the remain"
+6.Finnaly, return the result based on the operation user choose 
+*/
+string devide(string n1, string n2, char operation)
+{
+    string result = "", subReminder;
+    string reminder = string(1, n1.at(0));
+    //loop through each digit of the first number
+    for (int i = 0; i < n1.size(); i++)
+    {
+        subReminder = get_subtraction(reminder, n2);
+        //first bit 0 means positive (subtraction possible)
+        //first bit  1 means negative (subtraction not possible)
+        if (subReminder.at(0) == '0')
+        {
+            result += '1';
+            if ((i + 1) < n1.size())
+                reminder = subReminder + n1.at(i + 1);
+            else
+                reminder = subReminder;
+        }
+        else
+        {
+            result += '0';
+            if ((i + 1) < n1.size())
+                reminder += n1.at(i + 1);
+            else
+                reminder = reminder;
+        }
+    }
+    //return the desired answer
+    if (operation == '/')
+        return result;
+    else if (operation == '%')
+        return reminder;
+}
+
 // this is the main function that will print the sum and carry of three binary digit, in short it will work as an actual full adder
 int main()
 {
     string num1, num2;
     cout << "Enter two binary numbers separated by space: ";
     cin >> num1 >> num2;
+    //input validation
+    for (char i : num1)
+    {
+        if (i != '0' and i != '1')
+        {
+            cout << "Invalid Input: Please enter binary numbers only\Try again" << endl;
+            cout << "Try again" << endl;
+            return -1;
+        }
+    }
+    for (char i : num2)
+    {
+        if (i != '0' and i != '1')
+        {
+            cout << "Invalid Input: Please enter binary numbers only" << endl;
+            cout << "Try again" << endl;
+            return -2;
+        }
+    }
 
     char operation;
-    cout << "Enter operation (+, -, *, ^): ";
+    cout << "Enter operation (+, -, *, ^, /, %): ";
     cin >> operation;
 
-    if (operation == '+')
+    while (true)     //loop to ask the user for valid operation until they provide one
     {
-        string Sum, carry;
-        tie(Sum, carry) = get_final_sum(num1, num2);  //function returs the sum in string
-        //int Sum = stoi(sSum);
+        if (operation == '+')
+        {
+            string Sum, carry;
+            tie(Sum, carry) = get_final_sum(num1, num2);  //function returs the sum in string
+            //int Sum = stoi(sSum);
 
-        cout << "The carry is = " << carry << endl;           //NOTE: this carry is empty for some reason, fix it
-        cout << "The sum is = " << Sum << endl;
-    }
-    else if (operation == '-')
-    {
-        string Sub = get_subtraction(num1, num2);     //function returns the result in string
-        //int Sub = stoi(sSub); 
+            cout << "The carry is = " << carry << endl;           //NOTE: this carry is empty for some reason, fix it
+            cout << "The sum is = " << Sum << endl;
+            break;
+        }
+        else if (operation == '-')
+        {
+            string Sub = get_subtraction(num1, num2);     //function returns the result in string
+            //int Sub = stoi(sSub); 
 
-        cout << "The subtraction is = " << Sub << endl;
+            cout << "The subtraction is = " << Sub << endl;
+            break;
+        }
+        else if (operation == '*')
+        {
+            string product = multiply(num1, num2);
+            cout << "The product is = " << product << endl;
+            break;
+        }
+        else if (operation == '^')
+        {
+            string result = power(num1, num2);
+            cout << num1 << " to the " << num2 << "th power = " << result << endl;
+            break;
+        }
+        else if (operation == '/' || operation == '%')
+        {
+            if (stoi(num2) == 0)
+            {
+                cout << "division by zero(0) is mathemetically illegal." << endl;
+                cout << "Enter a valid expression or number to procceed." << endl;
+                return -1;
+            }
+            string divisionResult = devide(num1, num2, operation);
+            cout << num1 << " " << operation << " " << num2 << " = " << divisionResult << endl;
+            break;
+        }
+        else
+        {
+            cout << "\nPlease select an operation";
+            cin >> operation;
+        }
     }
-    else if (operation == '*')
-    {
-        string product = multiply(num1, num2);
-        cout << "The product is = " << product << endl;
-    }
-    else if (operation == '^')
-    {
-        string result = power(num1, num2);
-        cout << num1 << "to the " << num2 << "th power = " << result << endl;
-    }
-    else { cout << "\nPlease select an operation" << endl; }
 }
