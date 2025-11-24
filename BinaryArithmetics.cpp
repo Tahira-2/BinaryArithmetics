@@ -55,143 +55,125 @@ bool get_carry(bool A, bool B, bool C_in) {
     return carry;
 }
 
-//this function modifies the number's size to the right number of bit so successfully operate 2's complement
-/*1.  it takes the second number, it's size, and the size it will be changed to
-2. added_zero = calculates how many '0' needed to gain the certain length
-3. add the zerros to the left of num2
-4. having '1' to the same length as num2, to later easily use in 2's complement*/
-pair<string, string> fix_bit(string num2, int num_size, int new_size)
+//this function modifies the number's size
+/*1.  it takes a number, and the size it will be changed to
+2. addNumzeros = calculates how many '0' needed to gain the certain length
+3. add the zerros to the left of the number
+*/
+void fixNumBit(string& number, int size)
 {
-    int added_zero = new_size - num_size;
-    num2 = string(added_zero, '0') + num2;
-    string add_1 = string(new_size - 1, '0') + '1';
+    int numBits;
+    int addNumZeros = size - number.size();
 
-    return make_pair(num2, add_1);
-}
-
-//fix the size for both bit
-pair<string, string> equal_size(string equalBit_n1, string equalBit_n2)
-{
-    int size;
-    //assigning size to the max size
-    if (equalBit_n1.size() > equalBit_n2.size())
+    for (int i = 0; i < addNumZeros; i++)
     {
-        size = equalBit_n1.size();
-        //now fix the size by additing 0 to the left
-        while (equalBit_n2.size() < size)
-        {
-            equalBit_n2 = '0' + equalBit_n2;
-        }
+        number = "0" + number;
     }
-    else
-    {
-        size = equalBit_n2.size();
-        //now fix the size by additing 0 to the left
-        while (equalBit_n1.size() < size)
-        {
-            equalBit_n1 = '0' + equalBit_n1;
-        }
-    }
-    return make_pair(equalBit_n1, equalBit_n2);
 }
 
 //this function gets the final sum and pass it to main function when called
 pair<string, string> get_final_sum(string num1, string num2)
 {
-    int A, B, C_in = 0;  //fo r the eftmost digits, the intial carry is 0
+    int A, B, C_in = 0;  //for the right most digits, the initial carryIn is 0
+    //store the bit-wise sum inside a vector
     vector<int> list_sum;
 
-
-    string equalBit_n1, equalBit_n2;
-    tie(equalBit_n1, equalBit_n2) = equal_size(num1, num2);
+    //determine new size
+    int newSize;
+    if (num1.size() > num2.size())
+        newSize = num1.size();
+    else
+        newSize = num2.size();
+    //fix the number of bits in the numbers for easier calculation
+    fixNumBit(num1, newSize);
+    fixNumBit(num1, newSize);
+  
     //s is to store the sums inside the list_sum vector
-    for (int i = (equalBit_n1.size() - 1); i >= 0; i--)
+    //start from right most digits
+    for (int i = (newSize-1); i >= 0; i--)
     {
-        A = equalBit_n1[i] - '0';    // subtract '0' to get convert string to integer
-        B = equalBit_n2[i] - '0';
+        // subtract '0' to get integer value
+        A = num1[i] - '0';
+        B = num2[i] - '0';
 
         int s = get_bitwise_sum(A, B, C_in);
-        list_sum.push_back(s); //storing the sums inside a list.  NOTE: the bits are stored reversedly 
-
-        C_in = get_carry(A, B, C_in);   //to passe "carry bit" and add them with the digits in the next place
+        //storing the sums inside a list.
+        list_sum.push_back(s);   //NOTE: the sums are stored reversedly 
+        C_in = get_carry(A, B, C_in);   //pass this "carry bit" to the next F/A with the digits
     }
     string C_out = to_string(C_in);
-    //cout << "\nThe carry is: " << C_out << endl;
-    //this loop the sum in one variable from the vector
+    //this loop put the sum back as a string from the vector
     string sum = "";
     for (int i : list_sum)
     {
-        sum = to_string(i) + sum;  //this reverse the sum again, ultimately writes it correctly
+        //this reverse the sum again, ultimately writes it correctly
+        sum = to_string(i) + sum;  
     }
     return make_pair(sum, C_out);
 }
 
-//this function modifies the number's size to the right number of bit so successfully operate 2's complement
-/*1.  it takes the second number, it's size, and the size it will be changed to
-2. added_zero = calculates how many '0' needed to gain the certain length
-3. add the zerros to the left of num2
-4. having '1' to the same length as num2, to later easily use in 2's complement*/
-string two_s_complement(string num2)
+//it gets the 2's complement of a number
+string two_s_complement(string num)
 {
-    int num_size = num2.size();
-    int new_size;
-    string fixed_num2, Add_1;
-    if (num_size < 2)
-    {
-        new_size = 2;
-        tie(fixed_num2, Add_1) = fix_bit(num2, num_size, new_size);
-    }
-    else if (num_size < 4) {
-        new_size = 4;
-        tie(fixed_num2, Add_1) = fix_bit(num2, num_size, new_size);
-    }
-    else if (num_size < 8) {
-        new_size = 8;
-        tie(fixed_num2, Add_1) = fix_bit(num2, num_size, new_size);
-    }
-    else if (num_size < 16) {
-        new_size = 16;
-        tie(fixed_num2, Add_1) = fix_bit(num2, num_size, new_size);
-    }
-    else if (num_size < 32) {
-        new_size = 32;
-        tie(fixed_num2, Add_1) = fix_bit(num2, num_size, new_size);
-    }
-    else if (num_size < 64) {
-        new_size = 64;
-        tie(fixed_num2, Add_1) = fix_bit(num2, num_size, new_size);
-    }
-    else if (num_size < 128) {
-        new_size = 128;
-        tie(fixed_num2, Add_1) = fix_bit(num2, num_size, new_size);
-    }
-
     //getting 1's complement by interchanging the position of 0 and 1
     string complement_1 = "";
-    for (char i : fixed_num2)
+    for (char i : num)
     {
         if (i == '0')
             complement_1 += '1';
         else complement_1 += '0';
     }
-    //calculate 2's complement now by adding 1 (Add_1) with complement_1
-    string complement_2, carry;
-    tie(complement_2, carry) = get_final_sum(complement_1, Add_1);   //the function returns the "sum" in "string"
-    //though carry isn't needed here, the functions returns 2 variables.
+
+    //get the needed size for "1" to get 2's complement
+    string oneToAdd = "1";
+    fixNumBit(oneToAdd, num.size());
+    
+    //get 2's complement by adding 1 to the complement_1
+    string complement_2, carryBit;
+    tie(complement_2, carryBit) = get_final_sum(complement_1, oneToAdd);   //the function returns the "sum" in "string"
+    
+    //ignore the carryBit
     return complement_2;
 }
 
 //calculate the subtraction
 string get_subtraction(string num1, string num2)
 {
-    string Nbit_num1, Nbit_num2;
+    int currentSize;
+    if (num1.size() > num2.size())
+        currentSize = num1.size();
+    else
+        currentSize = num2.size();
     
+    //determine the needed size
+    int new_size;
 
-    Nbit_num2 = two_s_complement(num2);
-    tie(Nbit_num1, Nbit_num2) = equal_size(num1, Nbit_num2);   //also fixing numer1's bit number to make summation easier.
-    //this function takes 1.the number, 2.it's size, 3. the size it will changed to
-    string result, carry;
-    tie(result, carry) = get_final_sum(Nbit_num1, Nbit_num2);
+    if (currentSize < 2)
+        new_size = 2;
+    else if (currentSize < 4)
+        new_size = 4;        
+    else if (currentSize < 8)
+        new_size = 8;
+    else if (currentSize < 16)
+        new_size = 16;
+    else if (currentSize < 32)
+        new_size = 32;
+    else if (currentSize < 64)
+        new_size = 64;
+    else if (currentSize < 128)
+        new_size = 128;
+
+    //fix the size of the numbers
+    fixNumBit(num1, new_size);
+    fixNumBit(num2, new_size);
+            
+    //get 2's complement of the second number "num2"
+    string negativeNum2 = two_s_complement(num2);
+
+    //Add first number to the negative second number
+    //num1 + 2's complement of num2
+    string result, carryBit;
+    tie(result, carryBit) = get_final_sum(num1, negativeNum2);
 
     return result;
 }
@@ -209,8 +191,10 @@ string multiply(string num1, string num2)
     {
         if (num2[i] == '1')
         {
+            //get_final_sum function gets the sum and carry separetely
             tie(product, temp_carry) = get_final_sum(product, num1);
-            product = temp_carry + product;  //get_final_sum function gets the sum and carry separetely, so here we need to add it befor the product to avoid miscalculation
+            //now add the carry befor the product for correct answer
+            product = temp_carry + product;
         }
         num1 = num1 + '0';
     }
@@ -223,12 +207,12 @@ string power(string num1, string num2)
 {
     string result = "1";
 
-    int num2_dec = 0;
+    int num2_deg = 0;
     for (char bit : num2)
     {
-        num2_dec = num2_dec * 2 + (bit - '0');  // polynomial evaluation
+        num2_deg = num2_deg * 2 + (bit - '0');  // polynomial evaluation
     }
-    for (int i = 1; i <= num2_dec; i++)
+    for (int i = 1; i <= num2_deg; i++)
     {
         result = multiply(result, num1);
     }
@@ -257,8 +241,8 @@ string divide(string n1, string n2, char operation)
     for (int i = 0; i < n1.size(); i++)
     {
         subRemainder = get_subtraction(remainder, n2);
+  
         //first bit 0 means positive (subtraction possible)
-        //first bit  1 means negative (subtraction not possible)
         if (subRemainder.at(0) == '0')
         {
             result += '1';
@@ -267,6 +251,7 @@ string divide(string n1, string n2, char operation)
             else
                 remainder = subRemainder;
         }
+        //first bit  1 means negative (subtraction not possible)
         else
         {
             result += '0';
@@ -328,21 +313,21 @@ int main()
         else if (operation == '-')
         {
             string Sub = get_subtraction(num1, num2);     //function returns the result in string
-            //int Sub = stoi(sSub); 
-
-            cout << "The subtraction is = " << Sub << endl;
+            
+            //print as integer to ignore the leading zeros
+            cout << "The subtraction is = " << stoi(Sub) << endl;
             break;
         }
         else if (operation == '*')
         {
             string product = multiply(num1, num2);
-            cout << "The product is = " << product << endl;
+            cout << "The product is = " << stoi(product) << endl;
             break;
         }
         else if (operation == '^')
         {
             string result = power(num1, num2);
-            cout << num1 << " to the " << num2 << "th power = " << result << endl;
+            cout << num1 << " to the " << num2 << "th power = " << stoi(result) << endl;
             break;
         }
         else if (operation == '/' || operation == '%')
@@ -354,7 +339,7 @@ int main()
                 return -1;
             }
             string divisionResult = divide(num1, num2, operation);
-            cout << num1 << " " << operation << " " << num2 << " = " << divisionResult << endl;
+            cout << num1 << " " << operation << " " << num2 << " = " << stoi(divisionResult) << endl;
             break;
         }
         else
