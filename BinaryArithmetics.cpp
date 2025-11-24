@@ -235,52 +235,52 @@ string power(string num1, string num2)
     return result;
 }
 
-//Division & reminder
+//Division & remainder
 /*
 * It follows the shift-and-subtract logic. 
 * Steps: 1. Treat the input strings like streams of bits. 
 2.Start by initializing remainder with just the first bit of the dividend.
 3.Loop through the dividend, bit by bit. 
 4.In each iteration treat the remainder as minuend and try subtracting num2 from it.
-5.Check the sign bit (the first character) of the result (called subReminder here).
+5.Check the sign bit (the first character) of the result (called subRemainder here).
     If it’s '0' (Positive): It means the divisor 'fits.' So, append '1' to quotient string (result)
         and update the remainder to this new result.
     If it’s '1' (Negative): It means the divisor was bigger. So append '0' quotient string (result)
         and append the next bit from dividend to the remain"
 6.Finnaly, return the result based on the operation user choose 
 */
-string devide(string n1, string n2, char operation)
+string divide(string n1, string n2, char operation)
 {
-    string result = "", subReminder;
-    string reminder = string(1, n1.at(0));
+    string result = "", subRemainder;
+    string remainder = string(1, n1.at(0));
     //loop through each digit of the first number
     for (int i = 0; i < n1.size(); i++)
     {
-        subReminder = get_subtraction(reminder, n2);
+        subRemainder = get_subtraction(remainder, n2);
         //first bit 0 means positive (subtraction possible)
         //first bit  1 means negative (subtraction not possible)
-        if (subReminder.at(0) == '0')
+        if (subRemainder.at(0) == '0')
         {
             result += '1';
             if ((i + 1) < n1.size())
-                reminder = subReminder + n1.at(i + 1);
+                remainder = subRemainder + n1.at(i + 1);
             else
-                reminder = subReminder;
+                remainder = subRemainder;
         }
         else
         {
             result += '0';
             if ((i + 1) < n1.size())
-                reminder += n1.at(i + 1);
+                remainder += n1.at(i + 1);
             else
-                reminder = reminder;
+                remainder = remainder;
         }
     }
     //return the desired answer
     if (operation == '/')
         return result;
     else if (operation == '%')
-        return reminder;
+        return remainder;
 }
 
 // this is the main function that will print the sum and carry of three binary digit, in short it will work as an actual full adder
@@ -353,7 +353,7 @@ int main()
                 cout << "Enter a valid expression or number to procceed." << endl;
                 return -1;
             }
-            string divisionResult = devide(num1, num2, operation);
+            string divisionResult = divide(num1, num2, operation);
             cout << num1 << " " << operation << " " << num2 << " = " << divisionResult << endl;
             break;
         }
